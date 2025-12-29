@@ -12,7 +12,7 @@ jobs:
   naming:
     # Only run when the added label is exactly 'RunCI'
     if: ${{ github.event.label.name == 'RunCI' }}
-    runs-on: [self-hosted, Windows]
+    runs-on: [ci-pc]
 
     steps:
       - name: Checkout repository
@@ -37,12 +37,13 @@ jobs:
           cd ${{ github.workspace }}\scripts
           uv sync
           cd ${{ github.workspace }}\
-          python -u .\scripts\src\scripts\validate_paths.py --paths-file .\changed-files.txt
+          scripts\.venv\Scripts\activate
+          uv run python -u .\scripts\src\scripts\validate_paths.py --paths-file .\changed-files.txt
 
   sample_check:
     name: Sample Check
     if: ${{ github.event.label.name == 'RunCI' }}
-    runs-on: [self-hosted, Windows]
+    runs-on: [ci-pc]
     needs: naming
 
     steps:
