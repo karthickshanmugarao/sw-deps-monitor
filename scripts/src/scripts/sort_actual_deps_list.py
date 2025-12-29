@@ -41,10 +41,11 @@ def sort_sections_and_keys(header, sections):
         sorted_sections[sec] = sorted(keys, key=key_sort)
     return header, sorted_sections
 
-def write_file(p, header, sections):
-    # backup
-    bak = p.with_suffix(p.suffix + ".bak." + datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-    shutil.copy2(p, bak)
+def write_file(p, header, sections, make_backup=False):
+    # backup (only if enabled)
+    if make_backup:
+        bak = p.with_suffix(p.suffix + ".bak." + datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        shutil.copy2(p, bak)
     parts = []
     if header:
         parts.extend(header)
