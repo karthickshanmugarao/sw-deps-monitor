@@ -6,4 +6,6 @@
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Item Name="GenerateChangedFilesList.vi" Type="VI" URL="../GenerateChangedFilesList.vi"/>
 	<Item Name="GenerateChangedLibrariesList.vi" Type="VI" URL="../GenerateChangedLibrariesList.vi"/>
+	<Item Name="ReadCICDPathConfig.vi" Type="VI" URL="../../Reusables/ReadCICDPathConfig.vi"/>
+	<Item Name="ReadSectionPathKeys.vi" Type="VI" URL="../../Reusables/SubVIs/ReadSectionPathKeys.vi"/>
 </Library>
