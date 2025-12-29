@@ -11,7 +11,7 @@
 		<Property Name="server.vi.callsEnabled" Type="Bool">true</Property>
 		<Property Name="server.vi.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
-		<Item Name="ModuleA.lvlib" Type="Library" URL="../../Modules/ModuleA/ModuleA.lvlib"/>
+		<Item Name="ModuleA.lvlib" Type="Library" URL="../../../Modules/ModuleA/ModuleA.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="user.lib" Type="Folder">
 				<Item Name="openg_error.lvlib" Type="Library" URL="/&lt;userlib&gt;/_OpenG.lib/error/error.llb/openg_error.lvlib"/>
@@ -28,8 +28,8 @@
 				<Item Name="Qualified Name Array To Single String.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/LVClass/Qualified Name Array To Single String.vi"/>
 				<Item Name="VariantType.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/VariantDataType/VariantType.lvlib"/>
 			</Item>
-			<Item Name="ABComm.lvlib" Type="Library" URL="../../Communication/ABComm/ABComm.lvlib"/>
-			<Item Name="ACComm.lvlib" Type="Library" URL="../../Communication/ACComm/ACComm.lvlib"/>
+			<Item Name="ABComm.lvlib" Type="Library" URL="../../../Communication/ABComm/ABComm.lvlib"/>
+			<Item Name="ACComm.lvlib" Type="Library" URL="../../../Communication/ACComm/ACComm.lvlib"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
