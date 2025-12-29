@@ -25,26 +25,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
         run: |
-          $pr = $env:PR_NUMBER
-          $repo = $env:GITHUB_REPOSITORY
-          $parts = $repo -split '/' 
-          $owner = $parts[0]
-          $name = $parts[1]
-          $token = $env:GITHUB_TOKEN
-          $api = "https://api.github.com/repos/$owner/$name/pulls/$pr/files?per_page=100"
-          Write-Host "Querying changed files for PR #$pr"
-          $resp = Invoke-RestMethod -Headers @{ Authorization = "token $token"; Accept = "application/vnd.github.v3+json" } -Uri $api -Method Get
-          $files = @()
-          $resp | ForEach-Object { $files += $_.filename }
-          if ($files.Count -eq 0) { Write-Host 'No changed files found.' }
-          $files | Out-File -FilePath changed-files.txt -Encoding utf8
+          Write-Host "Base: $env:PR_BASE  Head: $env:PR_HEAD"
+          # Ensure both branches are available locally
+          git fetch origin $env:PR_BASE $env:PR_HEAD --no-tags --no-recurse-submodules --depth=1
+          # List files changed between base and head (uses the merge base)
+          git diff --name-only origin/$env:PR_BASE...origin/$env:PR_HEAD | Out-File -FilePath changed-files.txt -Encoding utf8
+          if ((Get-Item changed-files.txt).Length -eq 0) { Write-Host 'No changed files found.' }
           Get-Content changed-files.txt | ForEach-Object { Write-Host " - $_" }
 
-      - name: Validate file and folder names (PascalCase)
+
+      - name: Run path validator (Python)
         shell: powershell
         run: |
-          powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-paths.ps1 -PathsFile .\changed-files.txt
+          cd ${{ github.workspace }}\scripts
+          uv sync
+          cd ${{ github.workspace }}\
+          python .\scripts\src\scripts\validate_paths.py --paths-file .\changed-files.txt
 
   sample_check:
     name: Sample Check
