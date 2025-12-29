@@ -19,6 +19,7 @@
 		<Item Name="DepsCheckResult.ctl" Type="VI" URL="../Typedefs/DepsCheckResult.ctl"/>
 	</Item>
 	<Item Name="CreateProjectsForEachLibrary.vi" Type="VI" URL="../../DevTools/CreateProjectsForEachLibrary.vi"/>
+	<Item Name="ExpectedDepsCheckResults.vi" Type="VI" URL="../SubVIs/ExpectedDepsCheckResults.vi"/>
 	<Item Name="FindLibraryPath.vi" Type="VI" URL="../SubVIs/FindLibraryPath.vi"/>
 	<Item Name="GCliExit.vi" Type="VI" URL="../GCliExit.vi"/>
 	<Item Name="GCliTemplate.vi" Type="VI" URL="../GCliTemplate.vi"/>
