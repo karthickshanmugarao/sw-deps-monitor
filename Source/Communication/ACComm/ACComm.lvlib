@@ -4,14 +4,8 @@
 	<Property Name="NI.Lib.SourceVersion" Type="Int">587235328</Property>
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
-	<Item Name="Typedefs" Type="Folder">
-		<Item Name="DependenciesAction.ctl" Type="VI" URL="../Typedefs/DependenciesAction.ctl"/>
-	</Item>
-	<Item Name="CreateProjectsForEachLibrary.vi" Type="VI" URL="../../DevTools/CreateProjectsForEachLibrary.vi"/>
-	<Item Name="FindProjectPath.vi" Type="VI" URL="../SubVIs/FindProjectPath.vi"/>
-	<Item Name="GCliExit.vi" Type="VI" URL="../GCliExit.vi"/>
-	<Item Name="GCliTemplate.vi" Type="VI" URL="../GCliTemplate.vi"/>
-	<Item Name="GCliWrite.vi" Type="VI" URL="../GCliWrite.vi"/>
-	<Item Name="InitializeExpDepsFilesWithActualDeps.vi" Type="VI" URL="../../DevTools/InitializeExpDepsFilesWithActualDeps.vi"/>
-	<Item Name="UnexpectedDepsCheck.vi" Type="VI" URL="../../AutomatedChecks/UnexpectedDepsCheck.vi"/>
+	<Item Name="Message5.lvclass" Type="LVClass" URL="../Message5/Message5.lvclass"/>
+	<Item Name="Message6.lvclass" Type="LVClass" URL="../Message6/Message6.lvclass"/>
+	<Item Name="Message7.lvclass" Type="LVClass" URL="../Message7/Message7.lvclass"/>
+	<Item Name="Message8.lvclass" Type="LVClass" URL="../Message8/Message8.lvclass"/>
 </Library>
