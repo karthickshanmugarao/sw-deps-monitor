@@ -27,6 +27,9 @@ exclusion_section_specific_to_check = "ExcludePathsSpecificToChecks"
 changed_files_list_path = os.path.normpath(r"CICD\Temp\CheckModifiedLVFiles\changed_files.txt")
 changed_lvfiles_list_path = os.path.normpath(r"CICD\Temp\CheckModifiedLVFiles\changed_lvfiles.txt")
 in_scope_changed_lvfiles_path = os.path.normpath(r"CICD\Temp\CheckModifiedLVFiles\in_scope_changed_lvfiles.txt")
+in_scope_changed_lvlibs_path = os.path.normpath(r"CICD\Temp\CheckModifiedLVFiles\in_scope_changed_lvlibs.txt")
+LV_Version = "2023"
+LV_Bitness = "32"
 
 
 def load_path_configs(workspace_root: str) -> None:
@@ -37,7 +40,7 @@ def load_path_configs(workspace_root: str) -> None:
     repo-relative; surrounding quotes are stripped. Falls back to defaults.
     """
 
-    global changed_files_list_path, changed_lvfiles_list_path, in_scope_changed_lvfiles_path
+    global changed_files_list_path, changed_lvfiles_list_path, in_scope_changed_lvfiles_path, in_scope_changed_lvlibs_path
 
     cfg = configparser.ConfigParser()
     cfg_path = os.path.join(workspace_root, PATH_CONFIGS_FILE)
@@ -63,6 +66,7 @@ def load_path_configs(workspace_root: str) -> None:
     changed_files_list_path = _get_opt("ChangedFilesListPath", changed_files_list_path)
     changed_lvfiles_list_path = _get_opt("ChangedLVFilesListPath", changed_lvfiles_list_path)
     in_scope_changed_lvfiles_path = _get_opt("InScopeChangedLVFilesPath", in_scope_changed_lvfiles_path)
+    in_scope_changed_lvlibs_path = _get_opt("InScopeChangedLVLibsPath", in_scope_changed_lvlibs_path)
 
 
 ## Function to get the workspace root from command line arguments using argparse
@@ -277,13 +281,45 @@ def filter_changed_lvfiles_based_on_scope(
 
     return in_scope
 
+def generate_inscope_changed_lvlibs_list(repo_path: str) -> list[str]:
+    """
+    Generate a list of in-scope changed LabVIEW libraries (.lvlib) from
+    the in-scope changed LV files list.
+    """
+    global in_scope_changed_lvlibs_path
+    
+    # g-cli -v --lv-ver 2023 --arch 32 "E:\sw-deps-monitor\CICD\CheckModifiedVIs\GenerateChangedLibrariesList.vi" -- "E:\sw-deps-monitor"
+
+    gcli_args = [
+        "g-cli",
+        "-v",
+        "--lv-ver", LV_Version,
+        "--arch", LV_Bitness,
+        os.path.join(repo_path, r"CICD\CheckModifiedVIs\GenerateChangedLibrariesList.vi"),
+        "--",
+        repo_path
+    ]
+    rc, out, err = run(gcli_args)
+    if rc != 0:
+        raise RuntimeError(f"g-cli call to GenerateChangedLibrariesList.vi failed: {err}")
+    else:
+        print(out)
+    
+    changed_lib_log_path = os.path.join(repo_path, in_scope_changed_lvlibs_path)
+    if not os.path.exists(changed_lib_log_path):
+        raise FileNotFoundError(f"In-scope changed LV libraries list not found: {changed_lib_log_path}")
+    else:
+        print(f"In-scope changed LV libraries list generated at: {changed_lib_log_path}")
+
+    return None
+
 def main():
     args = get_cli_args()
     print("Workspace Root:", args.workspace_root)
 
     # Load path configs to set global path variables
     load_path_configs(args.workspace_root)
-    
+
     generate_changed_files_list(
         base_branch=args.base_branch,
         head_branch=args.head_branch,
@@ -293,6 +329,9 @@ def main():
         repo_path=args.workspace_root
     )
     filter_changed_lvfiles_based_on_scope(
+        repo_path=args.workspace_root
+    )
+    generate_inscope_changed_lvlibs_list(
         repo_path=args.workspace_root
     )
 

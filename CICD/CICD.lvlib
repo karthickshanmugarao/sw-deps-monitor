@@ -6,12 +6,12 @@
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Item Name="AutomatedChecks" Type="Folder">
 		<Item Name="UnexpectedDepsCheck.vi" Type="VI" URL="../AutomatedChecks/UnexpectedDepsCheck.vi"/>
-		<Item Name="UnexpectedDepsCheck1.vi" Type="VI" URL="../AutomatedChecks/UnexpectedDepsCheck1.vi"/>
 		<Item Name="UpdateActualDepsList.vi" Type="VI" URL="../AutomatedChecks/UpdateActualDepsList.vi"/>
 	</Item>
 	<Item Name="CheckModifiedVIs" Type="Folder">
 		<Item Name="GenerateChangedFilesList.vi" Type="VI" URL="../CheckModifiedVIs/GenerateChangedFilesList.vi"/>
 		<Item Name="GenerateChangedLibrariesList.vi" Type="VI" URL="../CheckModifiedVIs/GenerateChangedLibrariesList.vi"/>
+		<Item Name="ReadChangedLibrariesLog.vi" Type="VI" URL="../SubVIs/ReadChangedLibrariesLog.vi"/>
 		<Item Name="ReadCICDPathConfig.vi" Type="VI" URL="../Configs/ReadCICDPathConfig.vi"/>
 		<Item Name="ReadSectionPathKeys.vi" Type="VI" URL="../SubVIs/ReadSectionPathKeys.vi"/>
 	</Item>
