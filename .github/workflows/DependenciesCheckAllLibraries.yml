@@ -52,6 +52,7 @@ jobs:
       - name: Create PR for dependency updates if needed
         shell: powershell
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DEPS_MON_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           uv run python -u .\scripts\src\scripts\create_pr_for_deps.py --workspace "${{ github.workspace }}" --deps-file-path "Source\ActualDependencies\ActualDepsList.adeps" --base-branch "${{ github.ref_name }}"
