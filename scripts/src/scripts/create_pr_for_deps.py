@@ -67,8 +67,10 @@ def main():
     api_url = f"https://api.github.com/repos/{repo}/pulls"
     headers = {
         "Authorization": f"Bearer {github_token}",
-        "Accept": "application/vnd.github.v3+json",
-        "X-GitHub-Api-Version": "2022-11-28",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28",  # The recommended API version
+        "User-Agent": "sw-deps-monitor-script",  # GitHub requires a User-Agent header
     }
     data = {
         "title": "[Automated] Update Actual Dependencies List",
@@ -84,20 +86,28 @@ def main():
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         print(f"API Error: {e}", file=sys.stderr)
-        # The response body often contains a more detailed error message from GitHub.
-        print(f"Response Body: {response.text}", file=sys.stderr)
-        try:
-            error_data = response.json()
-            print(f"Response Body: {error_data}", file=sys.stderr)
-            if "Resource not accessible by personal access token" in error_data.get("message", ""):
-                print("\n--- HINT ---", file=sys.stderr)
-                print("This '403 Forbidden' error indicates a permission issue with your Personal Access Token (PAT).", file=sys.stderr)
-                print("1. For a PERSONAL repository, ensure your PAT has the 'repo' scope.", file=sys.stderr)
-                print("2. For an ORGANIZATION repository using SAML SSO, you must 'Enable SSO' or 'Authorize' the token for that organization.", file=sys.stderr)
-                print("You can manage your PAT settings and permissions on GitHub.", file=sys.stderr)
-                print("--- HINT ---\n", file=sys.stderr)
-        except requests.exceptions.JSONDecodeError:
-            print(f"Response Body (not JSON): {response.text}", file=sys.stderr)
+        response_text = response.text
+        print(f"Response Body: {response_text}", file=sys.stderr)
+
+        # Provide specific hints for common errors
+        if "Resource not accessible by personal access token" in response_text:
+            print("\n--- HINT ---", file=sys.stderr)
+            print("This '403 Forbidden' error indicates a permission issue with your Personal Access Token (PAT).", file=sys.stderr)
+            print("1. For a PERSONAL repository, ensure your PAT has the 'repo' scope.", file=sys.stderr)
+            print("2. For an ORGANIZATION repository using SAML SSO, you must 'Enable SSO' or 'Authorize' the token for that organization.", file=sys.stderr)
+            print("You can manage your PAT settings and permissions on GitHub.", file=sys.stderr)
+            print("--- HINT ---\n", file=sys.stderr)
+        elif "not all refs are readable" in response_text:
+            print("\n--- HINT ---", file=sys.stderr)
+            print("This '422 Validation Failed' error means the token cannot read one of the branches for the PR.", file=sys.stderr)
+            print(f"  - Head branch: {branch_name}", file=sys.stderr)
+            print(f"  - Base branch: {args.base_branch}", file=sys.stderr)
+            print("Please check the following:", file=sys.stderr)
+            print("1. Ensure the base branch (e.g., 'main') exists on the remote repository.", file=sys.stderr)
+            print("2. If using a 'Fine-grained' PAT, ensure it has 'Contents: Read-only' permissions for the repository.", file=sys.stderr)
+            print("3. If using a 'Classic' PAT, ensure it has the 'repo' scope (or at least 'public_repo' for public repositories).", file=sys.stderr)
+            print("--- HINT ---\n", file=sys.stderr)
+
         sys.exit(1)
 
     print("Successfully created pull request:", response.json()["html_url"])
