@@ -88,21 +88,22 @@ def main():
 
 if __name__ == "__main__":
     # For local testing:
-    # 1. Manually change the deps file (e.g., Source/ActualDependencies/ActualDepsList.adeps)
-    # 2. Set environment variables: GITHUB_TOKEN and GITHUB_REPOSITORY (e.g., "owner/repo")
+    # 1. Create a `.env` file in the repository root with:
+    #    GITHUB_TOKEN=your_github_pat_here
+    #    GITHUB_REPOSITORY=your_owner/your_repo
+    # 2. Manually change the deps file (e.g., Source/ActualDependencies/ActualDepsList.adeps)
     # 3. Run the script from the repository root: `uv run python scripts/src/scripts/create_pr_for_deps.py`
     if len(sys.argv) == 1:
         print("--- Running in local test mode with default arguments ---")
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+        except ImportError:
+            print("Warning: python-dotenv not found. Please install it (`uv pip install python-dotenv`) to use .env files for local testing.", file=sys.stderr)
 
-        # Set environment variables for local testing if they are not already set in the shell
-        os.environ.setdefault("GITHUB_TOKEN", "")
-        os.environ.setdefault("GITHUB_REPOSITORY", "karthickshanmugarao/sw-deps-monitor")
-        os.environ.setdefault("GITHUB_TOKEN", "your_github_pat_here")
-        os.environ.setdefault("GITHUB_REPOSITORY", "your_owner/your_repo")
-
-        # Add a check to ensure placeholder values are replaced before proceeding
-        if os.getenv("GITHUB_TOKEN") == "your_github_pat_here" or os.getenv("GITHUB_REPOSITORY") == "your_owner/your_repo":
-            print("Error: For local testing, please replace placeholder values for GITHUB_TOKEN and GITHUB_REPOSITORY in create_pr_for_deps.py or set them as environment variables.", file=sys.stderr)
+        # Check for environment variables after attempting to load from .env
+        if not os.getenv("GITHUB_TOKEN") or not os.getenv("GITHUB_REPOSITORY"):
+            print("Error: For local testing, create a .env file in the root directory with GITHUB_TOKEN and GITHUB_REPOSITORY, or set them as environment variables.", file=sys.stderr)
             sys.exit(1)
 
         sys.argv.extend([
