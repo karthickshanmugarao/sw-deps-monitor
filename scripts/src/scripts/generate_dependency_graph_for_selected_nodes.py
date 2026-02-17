@@ -5,7 +5,7 @@ from scripts import analyze_dependencies
 
 def main():
     parser = argparse.ArgumentParser(description="Generate dependency graphs for selected nodes")
-    parser.add_argument("--file", default="Source/ActualDependencies/ActualDepsList.adeps", help="Path to .adeps file")
+    parser.add_argument("--file", default="Source/ActualDependencies", help="Path to .adeps file or directory")
     parser.add_argument("--nodes", nargs='+', required=True, help="List of nodes to analyze")
     parser.add_argument("--output-dir", default="reports", help="Directory to save output images")
     args = parser.parse_args()

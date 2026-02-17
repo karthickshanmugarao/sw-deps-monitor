@@ -1,10 +1,10 @@
 import argparse
 import sys
-import analyze_dependencies
+from scripts import analyze_dependencies
 
 def main():
     parser = argparse.ArgumentParser(description="Find root nodes (nodes with no callers)")
-    parser.add_argument("--file", required=True, help="Path to .adeps file")
+    parser.add_argument("--file", default="Source/ActualDependencies", help="Path to .adeps file or directory")
     args = parser.parse_args()
 
     try:

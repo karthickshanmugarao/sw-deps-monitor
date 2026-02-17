@@ -2,25 +2,35 @@ import argparse
 import configparser
 import os
 import sys
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 import networkx as nx
 import plotly.graph_objects as go
 import plotly.io as pio
 
 
-def load_graph_from_adeps(file_path: str) -> nx.DiGraph:
+def load_graph_from_adeps(path: str) -> nx.DiGraph:
     """
-    Parses an .adeps (INI-style) file and returns a NetworkX Directed Graph.
+    Parses .adeps (INI-style) file(s) and returns a NetworkX Directed Graph.
+    If path is a directory, loads all .adeps files in it.
     Sections are nodes, and keys within sections are outgoing edges (dependencies).
     """
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Path not found: {path}")
+
+    files = []
+    if os.path.isdir(path):
+        for root, _, filenames in os.walk(path):
+            for filename in filenames:
+                if filename.endswith(".adeps"):
+                    files.append(os.path.join(root, filename))
+    else:
+        files.append(path)
 
     config = configparser.ConfigParser(allow_no_value=True)
     # Preserve case sensitivity for keys (node names)
     config.optionxform = str
-    config.read(file_path)
+    config.read(files)
 
     G = nx.DiGraph()
 
@@ -41,6 +51,12 @@ def check_circular_paths(G: nx.DiGraph) -> None:
     cycles = list(nx.simple_cycles(G))
     if cycles:
         raise Exception(f"Circular dependencies detected: {cycles}")
+
+def find_root_nodes(G: nx.DiGraph) -> List[str]:
+    """
+    Finds nodes in the graph that have no incoming edges (callers).
+    """
+    return [n for n, d in G.in_degree() if d == 0]
 
 
 def plot_graph(
@@ -157,8 +173,8 @@ def main():
         "--file",
         type=str,
         # required=True,
-        default="Source/ActualDependencies/ActualDepsList.adeps",
-        help="Path to the .adeps file (e.g., Source/ActualDependencies/ActualDepsList.adeps)",
+        default="Source/ActualDependencies",
+        help="Path to the .adeps file or directory (e.g., Source/ActualDependencies)",
     )
     parser.add_argument(
         "--node",
