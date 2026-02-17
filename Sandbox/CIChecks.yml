@@ -40,21 +40,21 @@ jobs:
           scripts\.venv\Scripts\activate
           uv run python -u .\scripts\src\scripts\validate_paths.py --paths-file .\changed-files.txt
 
-  sample_check:
-    name: Sample Check
-    if: ${{ github.event.label.name == 'RunCI' }}
-    runs-on: [ci-pc]
-    needs: naming
+  # sample_check:
+  #   name: Sample Check
+  #   if: ${{ github.event.label.name == 'RunCI' }}
+  #   runs-on: [ci-pc]
+  #   needs: naming
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Run CI checks (placeholder)
-        shell: powershell
-        run: |
-          Write-Host "Running CI checks on Windows self-hosted runner"
-          # Replace the lines below with your real commands (lint, build, test)
-          # Example for a PowerShell-based test runner:
-          # pwsh -Command "./scripts/install-deps.ps1"
-          # pwsh -Command "./scripts/run-tests.ps1"
+  #     - name: Run CI checks (placeholder)
+  #       shell: powershell
+  #       run: |
+  #         Write-Host "Running CI checks on Windows self-hosted runner"
+  #         # Replace the lines below with your real commands (lint, build, test)
+  #         # Example for a PowerShell-based test runner:
+  #         # pwsh -Command "./scripts/install-deps.ps1"
+  #         # pwsh -Command "./scripts/run-tests.ps1"
