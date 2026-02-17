@@ -6,6 +6,7 @@ from typing import Dict, Optional
 
 import networkx as nx
 import plotly.graph_objects as go
+import plotly.io as pio
 
 
 def load_graph_from_adeps(file_path: str) -> nx.DiGraph:
@@ -106,6 +107,8 @@ def plot_graph(
             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         ),
     )
+    # Disable mathjax to prevent potential Kaleido hangs/errors on Windows
+    pio.kaleido.scope.mathjax = None
     fig.write_image(output_path)
 
 
