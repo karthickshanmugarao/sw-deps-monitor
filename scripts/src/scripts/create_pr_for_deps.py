@@ -74,8 +74,17 @@ def main():
     }
 
     print(f"Creating pull request to merge {branch_name} into {args.base_branch}...")
+    print(f"API URL: {api_url}")
     response = requests.post(api_url, headers=headers, json=data)
     response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print(f"API Error: {e}", file=sys.stderr)
+        # The response body often contains a more detailed error message from GitHub.
+        print(f"Response Body: {response.text}", file=sys.stderr)
+        sys.exit(1)
+
     print("Successfully created pull request:", response.json()["html_url"])
 
 if __name__ == "__main__":
@@ -85,6 +94,18 @@ if __name__ == "__main__":
     # 3. Run the script from the repository root: `uv run python scripts/src/scripts/create_pr_for_deps.py`
     if len(sys.argv) == 1:
         print("--- Running in local test mode with default arguments ---")
+
+        # Set environment variables for local testing if they are not already set in the shell
+        os.environ.setdefault("GITHUB_TOKEN", "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")
+        os.environ.setdefault("GITHUB_REPOSITORY", "karthickshanmugarao/sw-deps-monitor")
+        os.environ.setdefault("GITHUB_TOKEN", "your_github_pat_here")
+        os.environ.setdefault("GITHUB_REPOSITORY", "your_owner/your_repo")
+
+        # Add a check to ensure placeholder values are replaced before proceeding
+        if os.getenv("GITHUB_TOKEN") == "your_github_pat_here" or os.getenv("GITHUB_REPOSITORY") == "your_owner/your_repo":
+            print("Error: For local testing, please replace placeholder values for GITHUB_TOKEN and GITHUB_REPOSITORY in create_pr_for_deps.py or set them as environment variables.", file=sys.stderr)
+            sys.exit(1)
+
         sys.argv.extend([
             "--workspace", ".",
             "--deps-file-path", "Source/ActualDependencies/ActualDepsList.adeps",
