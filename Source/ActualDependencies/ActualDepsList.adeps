@@ -1,0 +1,21 @@
+[ABComm]
+
+[ACComm]
+
+[ArrayUtilities]
+
+[FileUtilities]
+
+[ModuleA]
+ABComm = ""
+ACComm = ""
+FileUtilities = ""
+
+[ModuleB]
+ABComm = ""
+ACComm = ""
+StringUtilities = ""
+
+[ModuleC]
+
+[StringUtilities]
