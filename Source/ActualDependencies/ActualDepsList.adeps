@@ -13,9 +13,11 @@ FileUtilities = ""
 
 [ModuleB]
 ABComm = ""
-ACComm = ""
+FileUtilities = ""
 StringUtilities = ""
 
 [ModuleC]
+ACComm = ""
+ArrayUtilities = ""
 
 [StringUtilities]
