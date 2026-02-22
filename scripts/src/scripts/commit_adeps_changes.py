@@ -52,4 +52,35 @@ def main():
     print(f"Successfully committed and pushed changes to branch '{args.branch}'.")
 
 if __name__ == "__main__":
+    # For local testing:
+    # 1. Manually change the deps file (e.g., Source/ActualDependencies/ActualDepsList.adeps)
+    # 2. Check out a feature branch.
+    # 3. Run the script from the repository root: `uv run python scripts/src/scripts/commit_adeps_changes.py`
+    if len(sys.argv) == 1:
+        print("--- Running in local test mode with default arguments ---")
+        try:
+            # For local testing, we need to be on a branch to push to.
+            # Get the current branch name to use as a default.
+            result = subprocess.run(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                capture_output=True, text=True, check=True, encoding="utf-8"
+            )
+            current_branch = result.stdout.strip()
+            if not current_branch or current_branch == "HEAD":
+                print("Error: Could not determine current git branch. Are you in a detached HEAD state?", file=sys.stderr)
+                print("For local testing, please checkout a branch or provide the --branch argument.", file=sys.stderr)
+                sys.exit(1)
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            print("Error: Failed to get current git branch for local testing.", file=sys.stderr)
+            print("Please ensure 'git' is installed and you are running this script from within a git repository.", file=sys.stderr)
+            if isinstance(e, subprocess.CalledProcessError):
+                print(f"Git command failed with stderr: {e.stderr.strip()}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"Detected current branch: '{current_branch}'. Using it for the --branch argument.")
+        sys.argv.extend([
+            "--workspace", ".",
+            "--deps-file-path", "Source/ActualDependencies/ActualDepsList.adeps",
+            "--branch", current_branch,
+        ])
     main()
