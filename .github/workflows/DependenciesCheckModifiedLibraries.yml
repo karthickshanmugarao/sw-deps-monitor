@@ -6,7 +6,7 @@ on:
     types: [labeled]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   DependenciesCheckModifiedLibraries:
@@ -59,3 +59,13 @@ jobs:
           uv run python -u .\scripts\src\scripts\sort_actual_deps_list.py "${{ github.workspace }}\Source\ActualDependencies"
           uv run python -u .\scripts\src\scripts\find_circular_paths.py --folder "${{ github.workspace }}\Source\ActualDependencies"
 
+      - name: Commit dependency updates if needed
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd ${{ github.workspace }}\scripts
+          uv sync
+          cd ${{ github.workspace }}
+          scripts\.venv\Scripts\activate
+          uv run python -u .\scripts\src\scripts\commit_adeps_changes.py --workspace "${{ github.workspace }}" --deps-file-path "Source\ActualDependencies\ActualDepsList.adeps" --branch "${{ github.event.pull_request.head.ref }}"
