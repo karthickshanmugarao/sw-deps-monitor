@@ -59,32 +59,115 @@ def find_root_nodes(G: nx.DiGraph) -> List[str]:
     return [n for n, d in G.in_degree() if d == 0]
 
 
+def get_layered_layout(G: nx.DiGraph, horizontal_spacing: float = 2.0, vertical_spacing: float = 2.0) -> Dict[str, tuple]:
+    """
+    Creates a layered, hierarchical layout for a directed graph.
+    Nodes are arranged in layers based on their topological sort order.
+    Assumes the graph is a Directed Acyclic Graph (DAG).
+
+    Args:
+        G: The NetworkX DiGraph.
+        horizontal_spacing: The horizontal distance between nodes in the same layer.
+        vertical_spacing: The vertical distance between layers.
+
+    Returns:
+        A dictionary of positions keyed by node.
+    """
+    # This method works for DAGs. Since the script checks for cycles, any remaining
+    # unvisited nodes would be part of a disconnected component.
+    layers = {}
+    if not G.nodes():
+        return {}
+
+    # Start with root nodes (in-degree 0)
+    current_layer_nodes = [n for n, d in G.in_degree() if d == 0]
+    layer_num = 0
+    visited = set()
+
+    while current_layer_nodes:
+        # Sort nodes for deterministic layout
+        sorted_nodes = sorted(list(set(current_layer_nodes)))
+        layers[layer_num] = sorted_nodes
+        visited.update(sorted_nodes)
+
+        next_layer_nodes = []
+        for node in sorted_nodes:
+            for successor in G.successors(node):
+                if successor not in visited:
+                    # A node is in the next layer if all its parents are in current or previous layers
+                    is_ready = True
+                    for pred in G.predecessors(successor):
+                        if pred not in visited:
+                            is_ready = False
+                            break
+                    if is_ready:
+                        next_layer_nodes.append(successor)
+
+        current_layer_nodes = next_layer_nodes
+        layer_num += 1
+
+    # Assign positions
+    pos = {}
+    for layer_num, nodes in layers.items():
+        # y-coordinate is based on layer number (top-down)
+        y = -layer_num * vertical_spacing
+        num_nodes_in_layer = len(nodes)
+        # x-coordinate is spaced out to center the layer
+        layer_width = (num_nodes_in_layer - 1) * horizontal_spacing
+        x_start = -layer_width / 2.0
+        for i, node in enumerate(nodes):
+            x = x_start + i * horizontal_spacing
+            pos[node] = (x, y)
+
+    # Handle any remaining nodes (e.g., nodes in cycles if they exist) by placing them at the bottom.
+    remaining_nodes = sorted(list(set(G.nodes()) - visited))
+    if remaining_nodes:
+        y = -layer_num * vertical_spacing
+        num_nodes_in_layer = len(remaining_nodes)
+        layer_width = (num_nodes_in_layer - 1) * horizontal_spacing
+        x_start = -layer_width / 2.0
+        for i, node in enumerate(remaining_nodes):
+            x = x_start + i * horizontal_spacing
+            pos[node] = (x, y)
+            
+    return pos
+
+
 def plot_graph(
-    G: nx.DiGraph, output_path: str, title: str = "Dependency Graph", node_colors: Optional[Dict[str, str]] = None
+    G: nx.DiGraph,
+    output_path: str,
+    title: str = "Dependency Graph",
+    node_colors: Optional[Dict[str, str]] = None,
+    h_spacing: float = 2.0,
+    v_spacing: float = 2.0,
 ) -> None:
     """
     Plots the directed graph using Plotly and saves it to an image file.
     """
-    # Calculate layout for node positions
-    pos = nx.spring_layout(G, seed=42, k=0.5, iterations=50)
+    if not G.nodes():
+        print("Warning: Graph is empty, nothing to plot.")
+        return
 
-    edge_x = []
-    edge_y = []
-    
-    # Create edge traces
+    # Calculate layout for node positions using a layered approach
+    pos = get_layered_layout(G, horizontal_spacing=h_spacing, vertical_spacing=v_spacing)
+
+    # To draw arrows, we use annotations instead of a single scatter trace for edges.
+    annotations = []
     for edge in G.edges():
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
-
-    edge_trace = go.Scatter(
-        x=edge_x,
-        y=edge_y,
-        line=dict(width=1, color="#888"),
-        hoverinfo="none",
-        mode="lines",
-    )
+        annotations.append(
+            go.layout.Annotation(
+                ax=x0, ay=y0, axref='x', ayref='y',
+                x=x1, y=y1, xref='x', yref='y',
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=1.5,
+                arrowcolor='#888',
+                standoff=5  # Increase gap between arrow and node
+            )
+        )
 
     node_x = []
     node_y = []
@@ -113,7 +196,7 @@ def plot_graph(
     )
 
     fig = go.Figure(
-        data=[edge_trace, node_trace],
+        data=[node_trace],
         layout=go.Layout(
             title=dict(text=title, font=dict(size=16)),
             showlegend=False,
@@ -121,6 +204,7 @@ def plot_graph(
             margin=dict(b=20, l=5, r=5, t=40),
             xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            annotations=annotations,
         ),
     )
     # Disable mathjax to prevent potential Kaleido hangs/errors on Windows
@@ -128,7 +212,9 @@ def plot_graph(
     fig.write_image(output_path)
 
 
-def analyze_node_and_plot(G: nx.DiGraph, node_name: str, output_path: str) -> None:
+def analyze_node_and_plot(
+    G: nx.DiGraph, node_name: str, output_path: str, h_spacing: float, v_spacing: float
+) -> None:
     """
     Finds descendants and callers (ancestors) of a node and plots the subgraph.
     """
@@ -164,6 +250,8 @@ def analyze_node_and_plot(G: nx.DiGraph, node_name: str, output_path: str) -> No
         output_path=output_path,
         title=f"Subgraph for {node_name} (Red=Target, Green=Callers, Blue=Descendants)",
         node_colors=node_colors,
+        h_spacing=h_spacing,
+        v_spacing=v_spacing,
     )
 
 
@@ -187,6 +275,18 @@ def main():
         default=".",
         help="Root directory to save reports (default: current directory)",
     )
+    parser.add_argument(
+        "--h-spacing",
+        type=float,
+        default=2.0,
+        help="Horizontal spacing between nodes in the same layer (default: 2.0)",
+    )
+    parser.add_argument(
+        "--v-spacing",
+        type=float,
+        default=2.0,
+        help="Vertical spacing between layers (default: 2.0)",
+    )
 
     args = parser.parse_args()
 
@@ -202,10 +302,16 @@ def main():
 
         if args.node:
             output_path = os.path.join(reports_dir, f"{args.node}_dependency_graph.png")
-            analyze_node_and_plot(G, args.node, output_path)
+            analyze_node_and_plot(G, args.node, output_path, args.h_spacing, args.v_spacing)
         else:
             output_path = os.path.join(reports_dir, "full_dependency_graph.png")
-            plot_graph(G, output_path, title="Full Dependency Graph")
+            plot_graph(
+                G,
+                output_path,
+                title="Full Dependency Graph",
+                h_spacing=args.h_spacing,
+                v_spacing=args.v_spacing,
+            )
 
         print(f"Graph exported to: {os.path.abspath(output_path)}")
 
