@@ -63,7 +63,7 @@ def main():
 
         with open(args.output, "w", encoding="utf-8") as f:
             # Write Markdown Header
-            f.write("# Coupling and Instability Metrics\n\n")
+            f.write("# Coupling Metrics\n\n")
             f.write("The Instability (I) is calculated using the formula: `I = Ce / (Ca + Ce)`\n\n")
             f.write("| Module Name | Ca (Afferent) | Ce (Efferent) | Instability (I) |\n")
             f.write("|:------------|:-------------:|:-------------:|:---------------:|\n")

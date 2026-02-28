@@ -1,4 +1,4 @@
-# Coupling and Instability Metrics
+# Coupling Metrics
 
 The Instability (I) is calculated using the formula: `I = Ce / (Ca + Ce)`
 
