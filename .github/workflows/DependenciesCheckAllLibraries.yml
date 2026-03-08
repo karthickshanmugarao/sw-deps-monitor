@@ -1,7 +1,7 @@
 name: Dependencies Check For All Libraries
 
 on:
-  schedule:
+  # schedule:
     # Runs at 18:30 UTC (12:00 AM IST) every day
     #        ┌───────────── minute (0 - 59)
     #        │   ┌───────────── hour (0 - 23)
@@ -10,7 +10,7 @@ on:
     #        │   │ │ │ ┌───────────── day of the week (0 - 6, Sunday = 0 or 7, or use names like MON, TUE)
     #        │   │ │ │ │
     #        *   * * * * <command or workflow trigger>
-    - cron: '30 18 * * *'
+    # - cron: '30 18 * * *'
   workflow_dispatch:
 
 permissions:
