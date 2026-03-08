@@ -14,7 +14,7 @@
 		<Item Name="ModuleB.lvlib" Type="Library" URL="../../../Modules/ModuleB/ModuleB.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="ABComm.lvlib" Type="Library" URL="../../../Communication/ABComm/ABComm.lvlib"/>
-			<Item Name="FileUtilities.lvlib" Type="Library" URL="../../../Utilities/FileUtilities/FileUtilities.lvlib"/>
+			<Item Name="ACComm.lvlib" Type="Library" URL="../../../Communication/ACComm/ACComm.lvlib"/>
 			<Item Name="StringUtilities.lvlib" Type="Library" URL="../../../Utilities/StringUtilities/StringUtilities.lvlib"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build">
