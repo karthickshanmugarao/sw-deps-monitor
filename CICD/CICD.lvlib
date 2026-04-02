@@ -5,6 +5,7 @@
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Item Name="AutomatedChecks" Type="Folder">
+		<Item Name="IsLinkedToLibrary.vi" Type="VI" URL="../AutomatedChecks/IsLinkedToLibrary.vi"/>
 		<Item Name="UnexpectedDepsCheck.vi" Type="VI" URL="../AutomatedChecks/UnexpectedDepsCheck.vi"/>
 		<Item Name="UpdateActualDepsList.vi" Type="VI" URL="../AutomatedChecks/UpdateActualDepsList.vi"/>
 	</Item>
@@ -29,8 +30,13 @@
 		<Item Name="AddLibSectionIfMissing.vi" Type="VI" URL="../SubVIs/AddLibSectionIfMissing.vi"/>
 		<Item Name="FindProjectPath.vi" Type="VI" URL="../SubVIs/FindProjectPath.vi"/>
 		<Item Name="GenericStatusIndicator.vi" Type="VI" URL="../SubVIs/GenericStatusIndicator.vi"/>
+		<Item Name="GetAllLVFilesForLibCheck.vi" Type="VI" URL="../SubVIs/GetAllLVFilesForLibCheck.vi"/>
 		<Item Name="IsUserLibVI.vi" Type="VI" URL="../SubVIs/IsUserLibVI.vi"/>
 		<Item Name="LVLibNameFromFileName.vi" Type="VI" URL="../SubVIs/LVLibNameFromFileName.vi"/>
+		<Item Name="LVLibNameFromFilePath.vi" Type="VI" URL="../SubVIs/LVLibNameFromFilePath.vi"/>
+		<Item Name="ReadChangedFileLogPaths.vi" Type="VI" URL="../SubVIs/ReadChangedFileLogPaths.vi"/>
+		<Item Name="ReadChangedLVFilesList.vi" Type="VI" URL="../SubVIs/ReadChangedLVFilesList.vi"/>
+		<Item Name="ReadExpectedDependencies.vi" Type="VI" URL="../SubVIs/ReadExpectedDependencies.vi"/>
 	</Item>
 	<Item Name="Typedefs" Type="Folder">
 		<Item Name="CICDPathConfigs.ctl" Type="VI" URL="../Typedefs/CICDPathConfigs.ctl"/>
@@ -42,7 +48,4 @@
 	<Item Name="FindLibraryPath.vi" Type="VI" URL="../SubVIs/FindLibraryPath.vi"/>
 	<Item Name="GetActualDepsListPath.vi" Type="VI" URL="../SubVIs/GetActualDepsListPath.vi"/>
 	<Item Name="GetAllLibraries.vi" Type="VI" URL="../SubVIs/GetAllLibraries.vi"/>
-	<Item Name="LVLibNameFromFilePath.vi" Type="VI" URL="../SubVIs/LVLibNameFromFilePath.vi"/>
-	<Item Name="ReadChangedFileLogPaths.vi" Type="VI" URL="../SubVIs/ReadChangedFileLogPaths.vi"/>
-	<Item Name="ReadExpectedDependencies.vi" Type="VI" URL="../SubVIs/ReadExpectedDependencies.vi"/>
 </Library>
