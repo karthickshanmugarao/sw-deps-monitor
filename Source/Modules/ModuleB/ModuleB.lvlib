@@ -5,4 +5,5 @@
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Item Name="Main.vi" Type="VI" URL="../Main.vi"/>
+	<Item Name="Typedef1.ctl" Type="VI" URL="../Typedef1.ctl"/>
 </Library>
